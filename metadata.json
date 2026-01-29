@@ -1,0 +1,7 @@
+{
+  "name": "SpeakFlow - Your AI English Teacher",
+  "description": "An interactive English learning platform featuring real-time AI conversation, personalized corrections, and progress tracking.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
