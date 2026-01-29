@@ -79,7 +79,22 @@ const ChatView: React.FC<{ profile: UserProfile }> = ({ profile }) => {
     accumulatedSarahText.current = '';
     
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (micError: any) {
+        console.error("Microphone error:", micError);
+        let errorMsg = "Microfone não permitido. ";
+        if (micError.name === 'NotAllowedError') {
+          errorMsg += "Clique no cadeado 🔒 na barra de endereço e permita acesso ao microfone.";
+        } else if (micError.name === 'NotFoundError') {
+          errorMsg += "Nenhum microfone encontrado no seu computador.";
+        }
+        setConnectionError(errorMsg);
+        setTimeout(() => setIsLiveMode(false), 4000);
+        return;
+      }
+
       const inputCtx = new AudioContext({ sampleRate: 16000 });
       inputCtxRef.current = inputCtx;
 
@@ -172,8 +187,9 @@ const ChatView: React.FC<{ profile: UserProfile }> = ({ profile }) => {
         onerror: () => { setConnectionError("Connection lost. Please try again."); }
       });
 
-    } catch (e) {
-      setConnectionError("Mic access denied.");
+    } catch (e: any) {
+      console.error("Connection error:", e);
+      setConnectionError("Erro ao conectar. Tente novamente.");
       setTimeout(() => setIsLiveMode(false), 3000);
     }
   };
